@@ -1,0 +1,19 @@
+version: '3.2'
+services:
+  app.authorizer:
+    container_name: app.authorizer
+    build:
+      context: .
+      args:
+        APP_STAGE: dev
+    env_file:
+      - ./.env
+    networks:
+      - bubble
+    ports:
+      - 7777:80
+    volumes:
+      - ./src:/app
+networks:
+  bubble:
+    external: true
