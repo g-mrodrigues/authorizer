@@ -7,13 +7,13 @@ services:
       args:
         APP_STAGE: dev
     env_file:
-      - ./.env
+      - ./app/.env
     networks:
       - bubble
     ports:
       - 7777:80
     volumes:
-      - ./src:/app
+      - ./app:/app
 networks:
   bubble:
     external: true

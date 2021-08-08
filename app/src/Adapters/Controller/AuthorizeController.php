@@ -1,16 +1,11 @@
 <?php
 
-namespace App\Adapters\Controllers;
+namespace App\Adapters\Controller;
 
 class AuthorizeController
 {
-    public function __construct()
-    {
-
-    }
-
     public function authorize(string $input): string
     {
-
+        return $input . " DEU CERTO";//
     }
 }
