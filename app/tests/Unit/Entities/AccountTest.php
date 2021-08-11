@@ -1,63 +1,119 @@
 <?php
 
-namespace App\Tests\Unit\Entities;
+namespace Tests\Unit\Entities;
 
 use App\Entities\Account;
 use App\Entities\Enum\AccountViolationsEnum;
+use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Helpers\AccountTestHelperTrait;
+use Tests\Unit\Helpers\TransactionTestHelperTrait;
 
 class AccountTest extends TestCase
 {
+    use AccountTestHelperTrait,
+        TransactionTestHelperTrait;
+
     public function test_shouldCreateAccountInstance()
     {
-        $account = new Account(rand(10, 1000), rand(0, 1));
+        $account = $this->createAccount();
         self::assertInstanceOf(Account::class, $account);
     }
 
-    public function test_shouldReturnFalseOnCheckIfHasAvailableLimit()
+    public function test_shouldAddViolationsCorrectly()
     {
-        $limit = 150;
-        $account = new Account($limit, true);
+        $account = $this->createAccount();
+        $account->addViolation(AccountViolationsEnum::CARD_NOT_ACTIVE);
 
-        self::assertFalse($account->checkIfHasAvailableLimit($limit + 1));
+        self::assertNotEmpty($account->getViolations());
     }
 
-    public function test_shouldReturnTrueOnCheckIfHasAvailableLimit()
+    public function test_shouldAddViolationWhenCardIsNotActive()
     {
-        $limit = 150;
-        $account = new Account($limit, true);
-
-        self::assertTrue($account->checkIfHasAvailableLimit($limit));
-    }
-
-    public function test_shouldAddViolationsWhenCardIsNotActive()
-    {
-        $limit = rand(10, 100);
-        $account = new Account($limit, false);
-        $account->debit($limit - 1);
+        $account = $this->createAccount(false);
+        $account->isActiveCard();
 
         self::assertEquals([AccountViolationsEnum::CARD_NOT_ACTIVE], $account->getViolations());
     }
 
-    public function test_shouldAddViolationsWhenCardIsNotActiveAndThereIsNoLimitAvailable()
+    public function test_shouldAddViolationWhenInsufficientLimit()
     {
-        $limit = rand(10, 100);
-        $account = new Account($limit, false);
-        $account->debit($limit + 1);
+        $account = $this->createAccount();
+        $account->isSufficientLimit($account->getAvailableLimit() + 1);
 
-        self::assertEquals([
-            AccountViolationsEnum::CARD_NOT_ACTIVE,
-            AccountViolationsEnum::INSUFFICIENT_LIMIT
-        ], $account->getViolations());
+        self::assertEquals([AccountViolationsEnum::INSUFFICIENT_LIMIT], $account->getViolations());
     }
 
-
-    public function test_shouldDebitFromAvailableLimit()
+    public function test_shouldNotAddTransactionWhenAccountHasViolations()
     {
-        $limit = 150;
-        $account = new Account($limit, true);
-        $account->debit($limit);
+        $account = $this->createAccount(false);
+        $transaction = $this->createTransaction();
+        $account->isActiveCard();
+        $account->addTransaction($transaction);
 
-        self::assertEquals(0, $account->getAvailableLimit());
+        self::assertNotEmpty($account->getViolations());
+    }
+
+    public function test_shouldAddTransactionWhenAccountHasNoViolations()
+    {
+        $account = $this->createAccount(true);
+        $accountAvailableLimit = $account->getAvailableLimit();
+        $transaction = $this->createTransaction($accountAvailableLimit - 10);
+        $account->isActiveCard();
+        $account->addTransaction($transaction);
+
+        self::assertEmpty($account->getViolations());
+        self::assertNotEmpty($account->getTransactions());
+        self::assertEquals(10, $account->getAvailableLimit());
+    }
+
+    public function test_shouldAddViolationWhenIsHighFrequencySmallInterval()
+    {
+        $account = $this->createAccount(true);
+        $timeInterval = Carbon::now()->subMinute();
+        $transaction = $this->createTransaction(null, $timeInterval->format(DATE_ATOM));
+        $account->addTransaction($transaction)
+            ->addTransaction($transaction)
+            ->addTransaction($transaction)
+            ->isHighFrequencySmallInterval($timeInterval);
+
+        self::assertTrue($account->hasViolations());
+        self::assertEquals([AccountViolationsEnum::HIGH_FREQUENCY_SMALL_INTERVAL], $account->getViolations());
+        self::assertCount(3, $account->getTransactions());
+    }
+
+    public function test_shouldNotAddViolationWhenIsNoHighFrequencySmallInterval()
+    {
+        $account = $this->createAccount(true);
+        $timeInterval = Carbon::now()->subMinute();
+        $transaction = $this->createTransaction(null, $timeInterval->format(DATE_ATOM));
+        $account->addTransaction($transaction)
+            ->addTransaction($transaction)
+            ->isHighFrequencySmallInterval($timeInterval);
+
+        self::assertFalse($account->hasViolations());
+        self::assertCount(2, $account->getTransactions());
+    }
+
+    public function test_shouldAddViolationWhenTransactionIsDoubled()
+    {
+        $account = $this->createAccount(true);
+        $transaction = $this->createTransaction();
+        $account->addTransaction($transaction)
+            ->isDoubleTransaction($transaction);
+
+        self::assertTrue($account->hasViolations());
+        self::assertEquals([AccountViolationsEnum::DOUBLE_TRANSACTIONS], $account->getViolations());
+    }
+
+    public function test_shouldNotAddViolationWhenTransactionIsNotDouble()
+    {
+        $account = $this->createAccount(true);
+        $transactionOne = $this->createTransaction();
+        $transactionTwo = $this->createTransaction();
+        $account->addTransaction($transactionOne)
+            ->isDoubleTransaction($transactionTwo);
+
+        self::assertFalse($account->hasViolations());
     }
 }

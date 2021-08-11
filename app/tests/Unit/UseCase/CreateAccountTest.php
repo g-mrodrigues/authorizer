@@ -1,38 +1,37 @@
 <?php
 
-namespace App\Tests\UseCase;
+namespace Tests\Unit\UseCase;
 
 use App\Adapters\Repositories\AccountRepositoryInterface;
-use App\Entities\Account;
 use App\Entities\Enum\AccountViolationsEnum;
-use App\UseCase\AuthorizeService;
+use App\UseCase\CreateAccount;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Helpers\AccountTestHelperTrait;
 
-class AuthorizeServiceTest extends TestCase
+class CreateAccountTest extends TestCase
 {
+    use AccountTestHelperTrait;
+
     public function test_shouldCreateAccountSuccessfully()
     {
         $mock = $this->getAccountRepositoryMock();
         $mock->expects('getAccount')->once()->andReturnNull();
         $mock->expects('save')->once()->withAnyArgs()->andReturnArg(0);
-        $sut = new AuthorizeService($mock);
+        $sut = new CreateAccount($mock);
 
-        $limit = rand(0, 100);
-        $account = $sut->createAccount(true, $limit);
-        self::assertInstanceOf(Account::class, $account);
-        self::assertEquals($limit, $account->getAvailableLimit());
+        $account = $this->createAccount();
+        self::assertEmpty($sut->execute($account)->getViolations());
     }
 
     public function test_shouldAddViolationOnTryingToCreateNewAccount()
     {
         $mock = $this->getAccountRepositoryMock();
-        $mock->expects('getAccount')->once()->andReturn(new Account(1, true));
-        $sut = new AuthorizeService($mock);
+        $mock->expects('getAccount')->once()->andReturn($this->createAccount());
+        $sut = new CreateAccount($mock);
+        $account = $this->createAccount();
+        $account = $sut->execute($account);
 
-        $limit = rand(0, 100);
-        $account = $sut->createAccount(true, $limit);
-        self::assertInstanceOf(Account::class, $account);
         self::assertNotEmpty($account->getViolations());
         self::assertEquals([AccountViolationsEnum::ACCOUNT_ALREADY_INITIALIZED], $account->getViolations());
     }

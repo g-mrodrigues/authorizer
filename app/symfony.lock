@@ -17,6 +17,15 @@
     "hassankhan/config": {
         "version": "2.2.0"
     },
+    "illuminate/collections": {
+        "version": "v8.54.0"
+    },
+    "illuminate/contracts": {
+        "version": "v8.54.0"
+    },
+    "illuminate/macroable": {
+        "version": "v8.54.0"
+    },
     "mockery/mockery": {
         "version": "1.4.3"
     },
@@ -87,6 +96,9 @@
     },
     "psr/log": {
         "version": "2.0.0"
+    },
+    "psr/simple-cache": {
+        "version": "1.0.1"
     },
     "sebastian/cli-parser": {
         "version": "1.0.1"

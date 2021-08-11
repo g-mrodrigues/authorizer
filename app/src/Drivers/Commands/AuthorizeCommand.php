@@ -2,7 +2,9 @@
 
 namespace App\Drivers\Commands;
 
-use App\Adapters\Controller\AuthorizeController;
+use App\Adapters\Controllers\AuthorizeController;
+use App\Adapters\Gateways\GatewayInterface;
+use App\Adapters\Validators\ValidatorInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,7 +15,7 @@ class AuthorizeCommand extends Command
     protected static $defaultName = "app:authorize";
 
     public function __construct(
-        private AuthorizeController $controller,
+        private GatewayInterface $gateway
     ) {
         parent::__construct();
     }
@@ -26,7 +28,7 @@ class AuthorizeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $response = $this->controller->authorize($input->getArgument('operations'));
+        $response = $this->gateway->process($input->getArgument('operations'));
         $output->writeln($response);
         return Command::SUCCESS;
     }

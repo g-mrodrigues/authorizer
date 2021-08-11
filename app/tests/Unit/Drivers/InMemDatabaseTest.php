@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Drivers;
+namespace Tests\Unit\Drivers;
 
 use App\Drivers\Database\DatabaseInterface;
 use App\Drivers\Database\InMemDatabase;
@@ -10,15 +10,6 @@ use PHPUnit\Framework\TestCase;
 class InMemDatabaseTest extends TestCase
 {
     const INDEX_IDENTIFIER = 'test';
-
-    /**
-     * @error
-     */
-    public function test_shouldThrowErrorOnTryingToCreateClassByConstructor()
-    {
-        self::expectError();
-        new InMemDatabase();
-    }
 
     public function test_shouldGetSameInstance()
     {

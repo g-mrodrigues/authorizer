@@ -1,9 +1,8 @@
 <?php
 
-
 namespace App\Adapters\Repositories;
 
-use App\Drivers\Database\DatabaseInterface;
+use App\Drivers\Database\{DatabaseInterface, InMemDatabase};
 use App\Entities\Account;
 
 class AccountRepository implements AccountRepositoryInterface
@@ -12,24 +11,23 @@ class AccountRepository implements AccountRepositoryInterface
 
     private DatabaseInterface $database;
 
-    private int $accountId = 0;
-
-    public function __construct(DatabaseInterface $database)
+    public function __construct()
     {
-        $this->database = $database;
+        $this->database = InMemDatabase::getInstance();
     }
 
-    public function save(Account $account)
+    public function save(Account $account): Account
     {
-        $this->accountId = $this->database->insert(self::ACCOUNT_INDEX, $account);
+        $this->database->insert(self::ACCOUNT_INDEX, $account);
+        return $account;
     }
 
     public function getAccount(): Account|null
     {
-        if ($this->accountId == 0) {
-            return null;
+        if ($account = $this->database->select(self::ACCOUNT_INDEX)) {
+            return array_shift($account);
         }
 
-        return $this->database->select(self::ACCOUNT_INDEX, $this->accountId);
+        return null;
     }
 }

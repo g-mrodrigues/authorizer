@@ -3,31 +3,21 @@
 namespace App\Entities;
 
 use Carbon\Carbon;
-use \Datetime;
-use App\Entities\Traits\JsonSerializableModel;
 
-class Transaction
+class Transaction extends Entity
 {
-    use JsonSerializableModel;
-
-    private string $merchant;
-
-    private int $amount;
-
-    private DateTime $time;
+    private Carbon $time;
 
     public function __construct(
-        string $merchant,
-        int $amount,
+        private string $merchant,
+        private int $amount,
         string $time,
     )
     {
-        $this->merchant = $merchant;
-        $this->amount = $amount;
         $this->time = $this->getDateTime($time);
     }
 
-    private function getDateTime(string $time): DateTime
+    private function getDateTime(string $time): Carbon
     {
         return Carbon::createFromTimeString($time);
     }
@@ -42,8 +32,15 @@ class Transaction
         return $this->amount;
     }
 
-    public function getTime(): Datetime
+    public function getTime(): Carbon
     {
         return $this->time;
+    }
+
+    public function isDoubledTransaction(Transaction $transaction): bool
+    {
+        return $this->getAmount() === $transaction->getAmount() &&
+            $this->getMerchant() === $transaction->getMerchant() &&
+            $this->getTime()->gte($transaction->getTime()->subMinutes(2));
     }
 }

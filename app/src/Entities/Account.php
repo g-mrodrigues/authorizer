@@ -3,26 +3,23 @@
 namespace App\Entities;
 
 use App\Entities\Enum\AccountViolationsEnum;
-use App\Entities\Traits\JsonSerializableModel;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
+use \Datetime;
 
-class Account
+class Account extends Entity
 {
-    use JsonSerializableModel;
-
     private array $violations;
 
-    private int $availableLimit;
-
-    private bool $activeCard;
+    private Collection $transactions;
 
     public function __construct(
-        int $availableLimit,
-        bool $activeCard,
+        private int $availableLimit,
+        private bool $activeCard,
     )
     {
-        $this->availableLimit = $availableLimit;
-        $this->activeCard = $activeCard;
         $this->violations = [];
+        $this->transactions = collect();
     }
 
     public function addViolation(string $violations): self
@@ -36,36 +33,85 @@ class Account
         return $this->violations;
     }
 
+    public function hasViolations(): bool
+    {
+        return $this->violations != [];
+    }
+
+    public function eraseViolations(): self
+    {
+        $this->violations = [];
+        return $this;
+    }
+
     public function getAvailableLimit(): int
     {
         return $this->availableLimit;
     }
 
-    public function isActiveCard(): bool
+    public function getTransactions(): array
     {
-        return $this->activeCard;
+        return $this->transactions->toArray();
     }
 
-    public function checkIfHasAvailableLimit(int $limit): bool
+    public function isActiveCard(): self
     {
-        if ($this->availableLimit < $limit) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function debit(int $value): void
-    {
-        if (!$this->activeCard) {
+        return $this->activeCard ? $this :
             $this->addViolation(AccountViolationsEnum::CARD_NOT_ACTIVE);
-        }
+    }
 
-        if (!$this->checkIfHasAvailableLimit($value)) {
+    public function isSufficientLimit(int $amount): self
+    {
+        return $this->availableLimit >= $amount ? $this :
             $this->addViolation(AccountViolationsEnum::INSUFFICIENT_LIMIT);
-            return;
+    }
+
+    public function addTransaction(Transaction $transaction): self
+    {
+        if ($this->hasViolations()) {
+            return $this;
         }
 
-        $this->availableLimit -= $value;
+        $this->availableLimit -= $transaction->getAmount();
+        $this->transactions->add($transaction);
+        return $this;
+    }
+
+    public function isHighFrequencySmallInterval(Datetime $time): self
+    {
+        $count = $this->transactions->count();
+        $timeInterval = (new Carbon($time))->subMinutes(2);
+
+        return $this->transactions->slice($count - 3, $count)
+            ->filter(function (Transaction $transaction) use ($timeInterval) {
+                return $transaction->getTime()->isAfter($timeInterval);
+            })->count() > 2 ? $this->addViolation(AccountViolationsEnum::HIGH_FREQUENCY_SMALL_INTERVAL) :
+            $this;
+    }
+
+    public function isDoubleTransaction(Transaction $transaction): self
+    {
+        return $this->transactions->filter(function (Transaction $item) use ($transaction) {
+            return $item->isDoubledTransaction($transaction);
+        })->count() !== 0 ? $this->addViolation(AccountViolationsEnum::DOUBLE_TRANSACTIONS) :
+            $this;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'active-card' => $this->activeCard,
+            'available-limit' => $this->availableLimit,
+        ];
+    }
+
+    public function processTransaction(Transaction $transaction): self
+    {
+        return $this->eraseViolations()
+            ->isActiveCard()
+            ->isSufficientLimit($transaction->getAmount())
+            ->isHighFrequencySmallInterval($transaction->getTime())
+            ->isDoubleTransaction($transaction)
+            ->addTransaction($transaction);
     }
 }
