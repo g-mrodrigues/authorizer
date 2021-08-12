@@ -23,21 +23,20 @@ RUN docker-php-ext-install \
         mbstring \
         gd \
         xml \
-        posix \
         tokenizer \
         ctype \
-        pcntl \
         opcache \
-        && pecl install -f apcu \
-        && echo 'extension=apcu.so' > /usr/local/etc/php/conf.d/30_apcu.ini \
         && chmod -R 755 /usr/local/lib/php/extensions/ \
         && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
         && mkdir -p /app \
         && chown -R www-data:www-data /app
 
+WORKDIR /app
+
+COPY --chown=www-data:www-data /app/composer.json /app/composer.lock ./
 COPY --chown=www-data:www-data /docker/config/ /
 COPY --chown=www-data:www-data /docker/docker-entrypoint.sh /
 
-WORKDIR /app
+RUN composer install --dev --no-interaction --optimize-autoloader
 
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]

@@ -103,7 +103,7 @@ class AccountTest extends TestCase
             ->isDoubleTransaction($transaction);
 
         self::assertTrue($account->hasViolations());
-        self::assertEquals([AccountViolationsEnum::DOUBLE_TRANSACTIONS], $account->getViolations());
+        self::assertEquals([AccountViolationsEnum::DOUBLED_TRANSACTIONS], $account->getViolations());
     }
 
     public function test_shouldNotAddViolationWhenTransactionIsNotDouble()

@@ -2,22 +2,22 @@
 
 namespace App\Drivers\Database;
 
+use \Exception;
+
 class Singleton
 {
-    private static array $instances = [];
+    private static ?self $instances = null;
 
     /**
      * Singleton's constructor should not be public
      */
-    protected function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * Cloning are not permitted for singletons.
      */
-    protected function __clone()
-    {
+    public function __clone() {
+        throw new Exception('Cannot clone singleton');
     }
 
     /**
@@ -25,16 +25,20 @@ class Singleton
      */
     public function __wakeup()
     {
-        throw new \Exception("Cannot unserialize singleton");
+        throw new Exception('Cannot unserialize singleton');
     }
 
-    public static function getInstance()
+    public static function getInstance(): self
     {
-        $subclass = static::class;
-        if (!isset(self::$instances[$subclass])) {
-            self::$instances[$subclass] = new static();
+        if (is_null(self::$instances)) {
+            self::$instances = new static();
         }
 
-        return self::$instances[$subclass];
+        return self::$instances;
+    }
+
+    public static function reset()
+    {
+        self::$instances = null;
     }
 }

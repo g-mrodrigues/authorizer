@@ -2,9 +2,7 @@
 
 namespace App\Drivers\Commands;
 
-use App\Adapters\Controllers\AuthorizeController;
 use App\Adapters\Gateways\GatewayInterface;
-use App\Adapters\Validators\ValidatorInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

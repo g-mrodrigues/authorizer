@@ -10,7 +10,9 @@ class AuthorizePresenter implements PresenterInterface
     {
         $response = "";
         foreach ($accounts as $account) {
-            $response .= $this->format($account) . PHP_EOL;
+            if ($account instanceof Account) {
+                $response .= $this->format($account) . PHP_EOL;
+            }
         }
 
         return $response;

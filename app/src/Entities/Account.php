@@ -93,7 +93,7 @@ class Account extends Entity
     {
         return $this->transactions->filter(function (Transaction $item) use ($transaction) {
             return $item->isDoubledTransaction($transaction);
-        })->count() !== 0 ? $this->addViolation(AccountViolationsEnum::DOUBLE_TRANSACTIONS) :
+        })->count() !== 0 ? $this->addViolation(AccountViolationsEnum::DOUBLED_TRANSACTIONS) :
             $this;
     }
 

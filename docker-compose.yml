@@ -4,8 +4,6 @@ services:
     container_name: app.authorizer
     build:
       context: .
-      args:
-        APP_STAGE: dev
     env_file:
       - ./app/.env
     networks:

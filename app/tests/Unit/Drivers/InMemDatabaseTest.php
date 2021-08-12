@@ -19,6 +19,18 @@ class InMemDatabaseTest extends TestCase
         self::assertEquals($instance, $instance2);
     }
 
+    public function test_shouldThrowExceptionOnTryToSerialize()
+    {
+        self::expectExceptionMessage('Cannot unserialize singleton');
+        $this->getDatabaseInstance()->__wakeup();
+    }
+
+    public function test_shouldThrowExceptionOnTryToClone()
+    {
+        self::expectExceptionMessage('Cannot clone singleton');
+        clone $this->getDatabaseInstance();
+    }
+
     public function test_shouldInsertSuccessfully()
     {
         $instance = $this->getDatabaseInstance();

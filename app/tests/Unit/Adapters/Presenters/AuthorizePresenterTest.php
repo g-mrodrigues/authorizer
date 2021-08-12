@@ -15,7 +15,7 @@ class AuthorizePresenterTest extends TestCase
     public function test_shouldReturnFormattedStdout()
     {
         $presenter = new AuthorizePresenter();
-        $account = $this->getFakesAccounts();
+        $account = $this->getFakesAccounts(5);
         $response = $presenter->stdout($account);
 
         self::assertIsString($response);

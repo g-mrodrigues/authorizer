@@ -15,7 +15,7 @@ class AuthorizeGatewayTest extends TestCase
     use AccountTestHelperTrait,
         TransactionTestHelperTrait;
 
-    public function test_shouldParseDataThroughtProcess()
+    public function test_shouldParseDataThroughProcess()
     {
         $account = $this->getAccountInputExample();
         $account .= PHP_EOL . $this->getTransactionInputExample();
@@ -31,7 +31,7 @@ class AuthorizeGatewayTest extends TestCase
     public function test_shouldReturnEmptyStringWhenEmptyInputIsGiven()
     {
         $account = $this->getAccountInputExample();
-        $account .= PHP_EOL . $this->getTransactionInputExample();
+        $account .= PHP_EOL . $account;
 
         $presenterMock = $this->getPresenterMock();
         $caseMapper = $this->getCaseMapperMock();
