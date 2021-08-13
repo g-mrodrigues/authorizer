@@ -10,15 +10,4 @@ class AccountViolationsEnum
     const INSUFFICIENT_LIMIT = 'insufficient-limit';
     const HIGH_FREQUENCY_SMALL_INTERVAL = 'high-frequency-small-interval';
     const DOUBLED_TRANSACTIONS = 'doubled-transactions';
-
-    public static function all(): array
-    {
-        return [
-            self::ACCOUNT_ALREADY_INITIALIZED,
-            self::CARD_NOT_ACTIVE,
-            self::INSUFFICIENT_LIMIT,
-            self::HIGH_FREQUENCY_SMALL_INTERVAL,
-            self::DOUBLED_TRANSACTIONS
-        ];
-    }
 }

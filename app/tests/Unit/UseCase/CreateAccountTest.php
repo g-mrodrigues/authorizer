@@ -32,7 +32,7 @@ class CreateAccountTest extends TestCase
         $account = $this->createAccount();
         $account = $sut->execute($account);
 
-        self::assertNotEmpty($account->getViolations());
+        self::assertTrue($account->hasViolations());
         self::assertEquals([AccountViolationsEnum::ACCOUNT_ALREADY_INITIALIZED], $account->getViolations());
     }
 

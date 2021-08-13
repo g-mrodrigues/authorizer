@@ -1,0 +1,6 @@
+#!/bin/bash
+if [[ -z "$1" ]]; then
+  docker exec -it app.authorizer ./vendor/bin/phpunit
+else
+  docker exec -it app.authorizer ./vendor/bin/phpunit --filter "$1"
+fi

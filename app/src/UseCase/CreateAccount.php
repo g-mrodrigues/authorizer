@@ -20,6 +20,7 @@ class CreateAccount implements UseCaseInterface
             return $account->addViolation(AccountViolationsEnum::ACCOUNT_ALREADY_INITIALIZED);
         }
 
-        return $this->accountRepository->save($account);
+        $this->accountRepository->save($account->toSave());
+        return $account;
     }
 }

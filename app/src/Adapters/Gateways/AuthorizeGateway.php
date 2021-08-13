@@ -19,13 +19,7 @@ class AuthorizeGateway implements GatewayInterface
         $response = [];
         foreach (explode(PHP_EOL, $input) as $content) {
             $result = $this->caseMapper->map(json_decode($content));
-
-            if (is_object($result)) {
-                $response[] = clone $result;
-                continue;
-            }
-
-            $response[] = $result;
+            array_push($response, $result);
         }
 
         return $this->presenter->stdout($response);

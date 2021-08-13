@@ -6,39 +6,29 @@ class InMemDatabase extends Singleton implements DatabaseInterface
 {
     protected array $storage = [];
 
-    protected int $increment = 1;
-
-    public function insert(string $index, $content): int
+    public function insert(string $index, $content)
     {
-        $this->storage[$index][$this->increment] = $content;
-        return $this->increment++;
+        $this->storage[$index] = $content;
+        return $content;
     }
 
-    public function select(string $index, int|null $id = null)
+    public function select(string $index)
     {
         if (!isset($this->storage[$index])) {
             return null;
         }
 
-        if (is_null($id)) {
-            return $this->storage[$index];
-        }
-
-        return $this->storage[$index][$id];
+        return $this->storage[$index];
     }
 
-    public function update(string $index, int $id, $content)
+    public function update(string $index, $content)
     {
-        $this->storage[$index][$id] = $content;
+        $this->storage[$index] = $content;
+        return $content;
     }
 
-    public function delete(string $index, int $id)
+    public function delete(string $index)
     {
-        unset($this->storage[$index][$id]);
-    }
-
-    public function getIncrement(): int
-    {
-        return $this->increment;
+        unset($this->storage[$index]);
     }
 }

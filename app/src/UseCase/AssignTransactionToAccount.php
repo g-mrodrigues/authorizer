@@ -23,6 +23,8 @@ class AssignTransactionToAccount implements UseCaseInterface
                 ->addViolation(AccountViolationsEnum::ACCOUNT_NOT_INITIALIZED);
         }
 
-        return $account->processTransaction($transaction);
+        $account = $account->processTransaction($transaction);
+        $this->accountRepository->save($account->toSave());
+        return $account;
     }
 }

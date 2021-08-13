@@ -25,7 +25,7 @@ class AccountRepository implements AccountRepositoryInterface
     public function getAccount(): Account|null
     {
         if ($account = $this->database->select(self::ACCOUNT_INDEX)) {
-            return array_shift($account);
+            return $account;
         }
 
         return null;

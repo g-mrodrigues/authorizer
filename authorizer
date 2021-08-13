@@ -1,0 +1,3 @@
+#!/bin/bash
+docker exec -it app.authorizer bin/console app:authorize "$(cat $1)"
+

@@ -2,7 +2,9 @@
 
 namespace Tests\Unit\Adapters\Presenters;
 
+use App\Adapters\Presenters\AccountStdout;
 use App\Adapters\Presenters\AuthorizePresenter;
+use App\Adapters\Presenters\StdoutInterface;
 use App\Entities\Enum\AccountViolationsEnum;
 use Illuminate\Support\Arr;
 use PHPUnit\Framework\TestCase;
@@ -14,26 +16,14 @@ class AuthorizePresenterTest extends TestCase
 
     public function test_shouldReturnFormattedStdout()
     {
-        $presenter = new AuthorizePresenter();
-        $account = $this->getFakesAccounts(5);
-        $response = $presenter->stdout($account);
+        $mock = \Mockery::mock(StdoutInterface::class)->makePartial();
+        $mock->shouldReceive('format')->withAnyArgs()->andReturnUsing(function ($input) {
+            return json_encode($input);
+        });
+        $presenter = new AuthorizePresenter($mock);
+        $account = $this->createAccount();
+        $response = $presenter->stdout([$account]);
 
         self::assertIsString($response);
-    }
-
-    private function getFakesAccounts(int $qty = 2): array
-    {
-        $accounts = [];
-        for ($i = 0; $i < $qty; $i++) {
-            $account = $this->createAccount();
-
-            if (rand(0,1)) {
-                $account->addViolation(Arr::random(AccountViolationsEnum::all()));
-            }
-
-            $accounts[] = $account;
-        }
-
-        return $accounts;
     }
 }

@@ -38,7 +38,13 @@ class Account extends Entity
         return $this->violations != [];
     }
 
-    public function eraseViolations(): self
+    public function toSave(): self
+    {
+        $doppelganger = clone $this;
+        return $doppelganger->eraseViolations();
+    }
+
+    private function eraseViolations(): self
     {
         $this->violations = [];
         return $this;
@@ -107,8 +113,7 @@ class Account extends Entity
 
     public function processTransaction(Transaction $transaction): self
     {
-        return $this->eraseViolations()
-            ->isActiveCard()
+        return $this->isActiveCard()
             ->isSufficientLimit($transaction->getAmount())
             ->isHighFrequencySmallInterval($transaction->getTime())
             ->isDoubleTransaction($transaction)

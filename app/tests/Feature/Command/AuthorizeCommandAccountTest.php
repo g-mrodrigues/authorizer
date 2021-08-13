@@ -4,7 +4,6 @@ namespace Tests\Feature\Command;
 
 use App\Drivers\Commands\AuthorizeCommand;
 use App\Entities\Enum\AccountViolationsEnum;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tests\Feature\TestCase;
 

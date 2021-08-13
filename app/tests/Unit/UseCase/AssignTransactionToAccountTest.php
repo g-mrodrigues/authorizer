@@ -20,6 +20,7 @@ class AssignTransactionToAccountTest extends TestCase
         $account = $this->createAccount(true, 100);
         $mock = $this->getAccountRepositoryMock();
         $mock->expects('getAccount')->once()->andReturn($account);
+        $mock->expects('save')->once()->andReturnArg(0);
         $transaction = $this->createTransaction(50);
 
         $sut = new AssignTransactionToAccount($mock);

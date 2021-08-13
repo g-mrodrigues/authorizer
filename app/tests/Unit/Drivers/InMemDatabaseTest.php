@@ -4,7 +4,6 @@ namespace Tests\Unit\Drivers;
 
 use App\Drivers\Database\DatabaseInterface;
 use App\Drivers\Database\InMemDatabase;
-use JetBrains\PhpStorm\ArrayShape;
 use PHPUnit\Framework\TestCase;
 
 class InMemDatabaseTest extends TestCase
@@ -36,28 +35,25 @@ class InMemDatabaseTest extends TestCase
         $instance = $this->getDatabaseInstance();
         $response = $instance->insert(self::INDEX_IDENTIFIER, $this->getFakeContent());
 
-        self::assertIsInt($response);
-        self::assertEquals($response + 1, $instance->getIncrement());
+        self::assertEquals($response, $this->getFakeContent());
     }
 
     public function test_shouldSelectSuccessfully()
     {
         $instance = $this->getDatabaseInstance();
-        $content = $this->getFakeContent();
-        $id = $instance->insert(self::INDEX_IDENTIFIER, $content);
-        $response = $instance->select(self::INDEX_IDENTIFIER, $id);
+        $expected = $instance->insert(self::INDEX_IDENTIFIER, $this->getFakeContent());
+        $response = $instance->select(self::INDEX_IDENTIFIER);
 
-        self::assertEquals($content, $response);
+        self::assertEquals($expected, $response);
     }
 
     public function test_shouldUpdateSuccessfully()
     {
         $instance = $this->getDatabaseInstance();
-        $content = $this->getFakeContent();
-        $id = $instance->insert(self::INDEX_IDENTIFIER, $content);
+        $content = $instance->insert(self::INDEX_IDENTIFIER, $this->getFakeContent());
         $content['a'] = 3;
-        $instance->update(self::INDEX_IDENTIFIER, $id, $content);
-        $response = $instance->select(self::INDEX_IDENTIFIER, $id);
+        $instance->update(self::INDEX_IDENTIFIER, $content);
+        $response = $instance->select(self::INDEX_IDENTIFIER);
 
         self::assertEquals($content, $response);
     }
@@ -65,14 +61,12 @@ class InMemDatabaseTest extends TestCase
     public function test_shouldDeleteSuccessfully()
     {
         $instance = $this->getDatabaseInstance();
-        $id = $instance->insert(self::INDEX_IDENTIFIER, $this->getFakeContent());
-        $instance->delete(self::INDEX_IDENTIFIER, $id);
+        $instance->insert(self::INDEX_IDENTIFIER, $this->getFakeContent());
+        $instance->delete(self::INDEX_IDENTIFIER);
 
-        self::expectError();
-        $instance->select(self::INDEX_IDENTIFIER, $id);
+        self::assertNull($instance->select(self::INDEX_IDENTIFIER));
     }
 
-    #[ArrayShape(['a' => "int", 'b' => "int"])]
     private function getFakeContent(): array
     {
         return ['a' => 1, 'b' => 2];
