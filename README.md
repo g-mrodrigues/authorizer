@@ -21,7 +21,7 @@ altamente testável e fácilmente extensível.
 - [PHPUnit 9.5.8](https://github.com/sebastianbergmann/phpunit/tree/9.5)
 
 ## Code Coverage
-- [Code Coverage](./app/coverage/dashboard.html)
+![Code Coverage](files/code-coverage.png "Code Coverage")
 
 ## Instruções
 ### Build
