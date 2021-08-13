@@ -1,2 +1,4 @@
 #!/bin/bash
-cp ./app/.env.example ./app/.env && docker-compose up -d --build && docker exec -it app.authorizer composer install --dev --no-interaction --optimize-autoloader
+cp ./app/.env.example ./app/.env \
+&& docker-compose up -d --build \
+&& docker exec -it app.authorizer composer install --dev --no-interaction --optimize-autoloader
