@@ -35,8 +35,5 @@ WORKDIR /app
 
 COPY --chown=www-data:www-data /app/composer.json /app/composer.lock ./
 COPY --chown=www-data:www-data /docker/config/ /
-COPY --chown=www-data:www-data /docker/docker-entrypoint.sh /
-
-RUN composer install --dev --no-interaction --optimize-autoloader
 
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]

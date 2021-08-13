@@ -26,9 +26,12 @@ altamente testável e fácilmente extensível.
 ## Instruções
 ### Build
 1) Verificar se as dependencias `Docker` and `Docker Compose` estão instaladas;
-2) Na raiz do repositório, executar o seguinte comando para buildar e subir o container
-   ```
-    docker-compose up -d
+2) Na raiz do repositório, executar os seguinte comando para buildar, subir o container e instalar as dependencias do projeto
+   ```shell
+    chmod +x build
+    ```
+   ```shell
+   ./build
    ```
 
 ### Execute
