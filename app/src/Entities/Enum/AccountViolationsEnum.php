@@ -10,4 +10,5 @@ class AccountViolationsEnum
     const INSUFFICIENT_LIMIT = 'insufficient-limit';
     const HIGH_FREQUENCY_SMALL_INTERVAL = 'high-frequency-small-interval';
     const DOUBLED_TRANSACTIONS = 'doubled-transactions';
+    const MERCHANT_DENIED = 'merchant-denied';
 }

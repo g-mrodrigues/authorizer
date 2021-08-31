@@ -13,6 +13,8 @@ class Account extends Entity
 
     private Collection $transactions;
 
+    private DenyList $denyList;
+
     public function __construct(
         private int $availableLimit,
         private bool $activeCard,
@@ -20,6 +22,7 @@ class Account extends Entity
     {
         $this->violations = [];
         $this->transactions = collect();
+        $this->denyList = new DenyList();
     }
 
     public function addViolation(string $violations): self
@@ -108,6 +111,7 @@ class Account extends Entity
         return [
             'active-card' => $this->activeCard,
             'available-limit' => $this->availableLimit,
+            'deny-list' => $this->denyList->getMerchants()
         ];
     }
 
@@ -117,6 +121,22 @@ class Account extends Entity
             ->isSufficientLimit($transaction->getAmount())
             ->isHighFrequencySmallInterval($transaction->getTime())
             ->isDoubleTransaction($transaction)
+            ->isMerchantDenied($transaction->getMerchant())
             ->addTransaction($transaction);
+    }
+
+    public function addDenyList(DenyList $denyList): self
+    {
+        $this->denyList = $denyList;
+        return $this;
+    }
+
+    private function isMerchantDenied(string $merchant): self
+    {
+        $response = array_filter($this->denyList->getMerchants(), function ($value) use ($merchant) {
+            return $merchant == $value;
+        });
+
+        return count($response) > 0 ? $this->addViolation(AccountViolationsEnum::MERCHANT_DENIED) : $this;
     }
 }
