@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Helpers;
+namespace Tests\Aux\Helpers;
 
 use App\Entities\Account;
 

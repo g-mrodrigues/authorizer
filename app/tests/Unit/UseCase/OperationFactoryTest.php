@@ -6,9 +6,9 @@ use App\Entities\Account;
 use App\Entities\Transaction;
 use App\UseCase\OperationFactory;
 use PHPUnit\Framework\TestCase;
-use Tests\Unit\Helpers\AccountTestHelperTrait;
-use Tests\Unit\Helpers\TransactionTestHelperTrait;
-use \stdClass;
+use stdClass;
+use Tests\Aux\Helpers\AccountTestHelperTrait;
+use Tests\Aux\Helpers\TransactionTestHelperTrait;
 use UnexpectedValueException;
 
 class OperationFactoryTest extends TestCase

@@ -5,17 +5,20 @@ namespace Tests\Feature\Command;
 use App\Drivers\Commands\AuthorizeCommand;
 use App\Entities\Enum\AccountViolationsEnum;
 use Symfony\Component\Console\Tester\CommandTester;
+use Tests\Aux\FixtureReader;
 use Tests\Feature\TestCase;
 
 class AuthorizeCommandAccountTest extends TestCase
 {
     private CommandTester $command;
+    private FixtureReader $fixtureReader;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->bootstrapApplication();
         $this->command = $this->getCommandTester(AuthorizeCommand::getDefaultName());
+        $this->fixtureReader = new FixtureReader();
     }
 
     public function test_shouldReturnEmptyWhenArgumentIsEmpty()
@@ -28,25 +31,25 @@ class AuthorizeCommandAccountTest extends TestCase
         $this->assertStringContainsString('', $output);
     }
 
-    public function test_shouldReturnAccountOutputSuccessfully()
+    public function test_shouldInitializeAccountSuccessfully()
     {
         $this->command->execute([
-            'operations' => '{"account": {"active-card": true, "available-limit": 1000}}',
+            'operations' => $this->fixtureReader->read(FixtureReader::OPERATIONS_TYPE, 'initialize_account'),
         ]);
 
-        $output = $this->command->getDisplay();
-        $this->assertEquals(
-            '{"account":{"active-card":true,"available-limit":1000},"violations":[]}' . PHP_EOL . PHP_EOL,
-            $output
-        );
+        $output = $this->commandAuthorizeOutputToArray($this->command->getDisplay());
+        $this->assertTrue($output[0]->account->{"active-card"});
+        $this->assertEquals(1000, $output[0]->account->{"available-limit"});
+        $this->assertEmpty($output[0]->account->{"deny-list"});
+        $this->assertEmpty($output[0]->violations);
+
     }
 
-    public function test_shouldReturnAccountOutputWithViolationAccountAlreadyInitialized()
+    public function test_shouldReturnViolationAccountAlreadyInitialized()
     {
         $this->command->execute(
             [
-                'operations' => '{"account": {"active-card": true, "available-limit": 1000}}
-                                {"account": {"active-card": true, "available-limit": 1000}}',
+                'operations' => $this->fixtureReader->read(FixtureReader::OPERATIONS_TYPE, 'account_already_initialized'),
             ]
         );
 
@@ -54,10 +57,10 @@ class AuthorizeCommandAccountTest extends TestCase
         $this->assertEquals(AccountViolationsEnum::ACCOUNT_ALREADY_INITIALIZED, $output[1]->violations[0]);
     }
 
-    public function test_shouldReturnAccountOutputWithViolationAccountNotInitialized()
+    public function test_shouldReturnViolationAccountNotInitialized()
     {
         $this->command->execute([
-            'operations' => '{"transaction": {"merchant": "Uber", "amount": 80, "time": "2019-02-13T11:01:31.000Z"}}',
+            'operations' => $this->fixtureReader->read(FixtureReader::OPERATIONS_TYPE, 'account_not_initialized'),
         ]);
 
         $output = $this->commandAuthorizeOutputToArray($this->command->getDisplay());

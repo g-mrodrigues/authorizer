@@ -7,8 +7,8 @@ use App\Adapters\Presenters\PresenterInterface;
 use App\UseCase\CaseMapper;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Tests\Unit\Helpers\AccountTestHelperTrait;
-use Tests\Unit\Helpers\TransactionTestHelperTrait;
+use Tests\Aux\Helpers\AccountTestHelperTrait;
+use Tests\Aux\Helpers\TransactionTestHelperTrait;
 
 class AuthorizeGatewayTest extends TestCase
 {

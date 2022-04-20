@@ -6,6 +6,7 @@ use App\Entities\Enum\AccountViolationsEnum;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use \Datetime;
+use JetBrains\PhpStorm\ArrayShape;
 
 class Account extends Entity
 {
@@ -106,6 +107,7 @@ class Account extends Entity
             $this;
     }
 
+    #[ArrayShape(['active-card' => "bool", 'available-limit' => "int", 'deny-list' => "array"])]
     public function toArray(): array
     {
         return [

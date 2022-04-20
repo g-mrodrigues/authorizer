@@ -11,7 +11,7 @@ class Singleton
     /**
      * Singleton's constructor should not be public
      */
-    private function __construct() {}
+    private final function __construct() {}
 
     /**
      * Cloning are not permitted for singletons.
