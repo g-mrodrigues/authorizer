@@ -56,6 +56,9 @@
     "phpspec/prophecy": {
         "version": "1.13.0"
     },
+    "phpstan/phpstan": {
+        "version": "1.5.7"
+    },
     "phpunit/php-code-coverage": {
         "version": "9.2.6"
     },
@@ -305,9 +308,6 @@
     },
     "symfony/string": {
         "version": "v5.3.3"
-    },
-    "symfony/test-pack": {
-        "version": "v1.0.8"
     },
     "symfony/translation": {
         "version": "5.3",
