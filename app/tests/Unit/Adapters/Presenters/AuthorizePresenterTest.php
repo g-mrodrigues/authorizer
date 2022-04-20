@@ -2,13 +2,10 @@
 
 namespace Tests\Unit\Adapters\Presenters;
 
-use App\Adapters\Presenters\AccountStdout;
 use App\Adapters\Presenters\AuthorizePresenter;
 use App\Adapters\Presenters\StdoutInterface;
-use App\Entities\Enum\AccountViolationsEnum;
-use Illuminate\Support\Arr;
 use PHPUnit\Framework\TestCase;
-use Tests\Unit\Helpers\AccountTestHelperTrait;
+use Tests\Aux\Helpers\AccountTestHelperTrait;
 
 class AuthorizePresenterTest extends TestCase
 {

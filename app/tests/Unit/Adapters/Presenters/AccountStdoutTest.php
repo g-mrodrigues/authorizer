@@ -3,8 +3,8 @@
 namespace Tests\Unit\Adapters\Presenters;
 
 use App\Adapters\Presenters\AccountStdout;
+use Tests\Aux\Helpers\AccountTestHelperTrait;
 use Tests\Feature\TestCase;
-use Tests\Unit\Helpers\AccountTestHelperTrait;
 
 class AccountStdoutTest extends TestCase
 {

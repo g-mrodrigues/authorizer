@@ -1,18 +1,11 @@
-# Autorizador
+# Authorizer
+Application that authorize transactions to a specific account through command line.
 
-Aplicação que autoriza transações para uma conta específica via linha de comando.
+Code challenge made for Nubank Software Engineer role.
 
-## Contexto
-
-Aplicação desenvolvida na linguagem PHP na sua ultima versão (PHP 8.0). Foi escolhido o uso do framework Symfony pois 
-fornece uma simples e completa API para implementações de CLI e ser facilmente testável.
-Esta aplicação foi baseada na Arquitetura Limpa (Clean Architecture), uma arquitetura simples, de baixo acomplamento,
-altamente testável e fácilmente extensível.
-
-![Architecture Driagram](files/authorizer-clean-architecture-2.png "Clean Architecture" )
+![Architecture Driagram](assets/authorizer-clean-architecture-2.png "Clean Architecture" )
 
 ## Stack
-
 - [Git & Bash](https://git-scm.com/downloads)
 - [Docker 20.10.7](https://www.docker.com/products/docker-desktop)
 - [Docker Compose 1.29.2](https://docs.docker.com/compose/install/)
@@ -21,12 +14,12 @@ altamente testável e fácilmente extensível.
 - [PHPUnit 9.5.8](https://github.com/sebastianbergmann/phpunit/tree/9.5)
 
 ## Code Coverage
-![Code Coverage](files/code-coverage.png "Code Coverage")
+![Code Coverage](assets/code-coverage.png "Code Coverage")
 
-## Instruções
+## Instruction
 ### Build
-1) Verificar se as dependencias `Docker` and `Docker Compose` estão instaladas;
-2) Na raiz do repositório, executar os seguinte comando para buildar, subir o container e instalar as dependencias do projeto
+1) Validate if the `Docker` and `Docker compose` dependencies are already installed;
+2) On root of the project, execute the following commands to build the application and install project dependencies;
    ```shell
     chmod +x build
     ```
@@ -35,23 +28,21 @@ altamente testável e fácilmente extensível.
    ```
 
 ### Execute
-- Na raiz do projeto execute os seguintes comandos:
+- On the root of the project, execute the following commands to execute the application:
    ```shell
     chmod +x authorizer
     ```
    ```shell
    ./authorizer FILE_PATH
    ```
-   Altere FILE_PATH para o caminho do arquivo que deseja executar
+   Change FILE_PATH to the file path that you want to authorize (some examples are on `files` folder on the root of this project)
 
 ### Tests
-- Para rodar os testes execute os seguintes comandos:
+- To perform tests, execute the following commands:
    ```shell
    chmod +x tests
    ```
   ```shell
-   ./tests TESTS_TYPE
+   ./tests <TESTS_TYPE>
    ```
-  Caso queira rodar um tipo especifico de teste, altere `TESTS_TYPE` para `Unit`, caso queira executar apenas testes 
-  unitários, ou `Feature`, caso queira executar apenas testes de integração. Para executar ambos os testes, nenhum 
-  argumento deve ser passado.
+  <TEST_TYPE> = Feature|Unit

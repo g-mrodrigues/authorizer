@@ -7,7 +7,7 @@ use App\Entities\Enum\AccountViolationsEnum;
 use App\UseCase\CreateAccount;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Tests\Unit\Helpers\AccountTestHelperTrait;
+use Tests\Aux\Helpers\AccountTestHelperTrait;
 
 class CreateAccountTest extends TestCase
 {

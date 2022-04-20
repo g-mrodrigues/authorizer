@@ -7,8 +7,8 @@ use App\Entities\Enum\AccountViolationsEnum;
 use App\UseCase\AssignTransactionToAccount;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Tests\Unit\Helpers\TransactionTestHelperTrait;
-use Tests\Unit\Helpers\AccountTestHelperTrait;
+use Tests\Aux\Helpers\AccountTestHelperTrait;
+use Tests\Aux\Helpers\TransactionTestHelperTrait;
 
 class AssignTransactionToAccountTest extends TestCase
 {

@@ -6,8 +6,8 @@ use App\Entities\Account;
 use App\Entities\Enum\AccountViolationsEnum;
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
-use Tests\Unit\Helpers\AccountTestHelperTrait;
-use Tests\Unit\Helpers\TransactionTestHelperTrait;
+use Tests\Aux\Helpers\AccountTestHelperTrait;
+use Tests\Aux\Helpers\TransactionTestHelperTrait;
 
 class AccountTest extends TestCase
 {

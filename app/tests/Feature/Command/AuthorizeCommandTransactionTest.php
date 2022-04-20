@@ -5,26 +5,28 @@ namespace Tests\Feature\Command;
 use App\Drivers\Commands\AuthorizeCommand;
 use App\Entities\Enum\AccountViolationsEnum;
 use Symfony\Component\Console\Tester\CommandTester;
+use Tests\Aux\FixtureReader;
 use Tests\Feature\TestCase;
 
 class AuthorizeCommandTransactionTest extends TestCase
 {
     protected CommandTester $command;
+    private FixtureReader $fixtureReader;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->bootstrapApplication();
         $this->command = $this->getCommandTester(AuthorizeCommand::getDefaultName());
+        $this->fixtureReader = new FixtureReader();
     }
 
     public function test_shouldReturnAccountOutputWithCorrectAvailableLimitAndNoViolations()
     {
         $this->command->execute(
             [
-                'operations' => '{"account": {"active-card": true, "available-limit": 1000}}
-                                {"transaction": {"merchant": "Nike", "amount": 800, "time": "2019-02-13T11:01:01.000Z"}}
-                                {"transaction": {"merchant": "Uber", "amount": 80, "time": "2019-02-13T11:01:31.000Z"}}'
+                'operations' => $this->fixtureReader
+                    ->read(FixtureReader::OPERATIONS_TYPE, 'transactions')
             ]
         );
 
@@ -35,12 +37,12 @@ class AuthorizeCommandTransactionTest extends TestCase
         $this->assertEmpty($output[2]->violations);
     }
 
-    public function test_shouldReturnAccountOutputWithInsufficientLimitViolation()
+    public function test_shouldReturnWithInsufficientLimitViolation()
     {
         $this->command->execute(
             [
-                'operations' => '{"account": {"active-card": true, "available-limit": 100}}
-                                {"transaction": {"merchant": "Nike", "amount": 800, "time": "2019-02-13T11:01:01.000Z"}}'
+                'operations' => $this->fixtureReader
+                    ->read(FixtureReader::OPERATIONS_TYPE, 'transaction_with_insufficient_limit')
             ]
         );
         $output = $this->commandAuthorizeOutputToArray($this->command->getDisplay());
@@ -49,12 +51,11 @@ class AuthorizeCommandTransactionTest extends TestCase
         $this->assertEquals([AccountViolationsEnum::INSUFFICIENT_LIMIT], $output[1]->violations);
     }
 
-    public function test_shouldReturnAccountOutputWithCardNotActiveViolation()
+    public function test_shouldReturnWithCardNotActiveViolation()
     {
         $this->command->execute(
             [
-                'operations' => '{"account": {"active-card": false, "available-limit": 100}}
-                            {"transaction": {"merchant": "Uber", "amount": 80, "time": "2019-02-13T11:01:01.000Z"}}'
+                'operations' => $this->fixtureReader->read(FixtureReader::OPERATIONS_TYPE, 'card_not_active')
             ]
         );
         $output = $this->commandAuthorizeOutputToArray($this->command->getDisplay());
@@ -63,15 +64,12 @@ class AuthorizeCommandTransactionTest extends TestCase
         $this->assertEquals([AccountViolationsEnum::CARD_NOT_ACTIVE], $output[1]->violations);
     }
 
-    public function test_shouldReturnAccountOutputWithHighFrequencySmallIntervalViolation()
+    public function test_shouldReturnWithHighFrequencySmallIntervalViolation()
     {
         $this->command->execute(
             [
-                'operations' => '{"account": {"active-card": true, "available-limit": 1000}}
-                                {"transaction": {"merchant": "Nike", "amount": 500, "time": "2019-02-13T11:01:01.000Z"}}
-                                {"transaction": {"merchant": "Uber", "amount": 80, "time": "2019-02-13T11:01:31.000Z"}}
-                                {"transaction": {"merchant": "Uber", "amount": 30, "time": "2019-02-13T11:02:00.000Z"}}
-                                {"transaction": {"merchant": "Uber", "amount": 55, "time": "2019-02-13T11:02:31.000Z"}}'
+                'operations' => $this->fixtureReader
+                    ->read(FixtureReader::OPERATIONS_TYPE, 'high_frequency_interval')
             ]
         );
         $output = $this->commandAuthorizeOutputToArray($this->command->getDisplay());
@@ -80,14 +78,12 @@ class AuthorizeCommandTransactionTest extends TestCase
         $this->assertEquals([AccountViolationsEnum::HIGH_FREQUENCY_SMALL_INTERVAL], $output[4]->violations);
     }
 
-    public function test_shouldReturnAccountOutputWithIsDoubledTransactionViolation()
+    public function test_shouldReturnWithIsDoubledTransactionViolation()
     {
         $this->command->execute(
             [
-                'operations' => '{"account": {"active-card": true, "available-limit": 1000}}
-                                {"transaction": {"merchant": "Nike", "amount": 500, "time": "2019-02-13T11:01:01.000Z"}}
-                                {"transaction": {"merchant": "Nike", "amount": 500, "time": "2019-02-13T11:02:01.000Z"}}
-                                {"transaction": {"merchant": "Nike", "amount": 500, "time": "2019-02-13T11:03:02.000Z"}}'
+                'operations' => $this->fixtureReader
+                    ->read(FixtureReader::OPERATIONS_TYPE, 'doubled_transaction')
             ]
         );
         $output = $this->commandAuthorizeOutputToArray($this->command->getDisplay());
@@ -97,12 +93,12 @@ class AuthorizeCommandTransactionTest extends TestCase
         $this->assertEquals(0, $output[3]->account->{'available-limit'});
     }
 
-    public function test_shouldReturnAccountOutputWithMultipleViolations()
+    public function test_shouldReturnWithMultipleViolations()
     {
         $this->command->execute(
             [
-                'operations' => '{"account": {"active-card": false, "available-limit": 100}}
-                                {"transaction": {"merchant": "Nike", "amount": 500, "time": "2019-02-13T11:01:01.000Z"}}'
+                'operations' => $this->fixtureReader
+                    ->read(FixtureReader::OPERATIONS_TYPE, 'multiple_violations')
             ]
         );
         $output = $this->commandAuthorizeOutputToArray($this->command->getDisplay());
